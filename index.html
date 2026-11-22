@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Polícia Federal | Painel do Delegado — Gerador de Códigos</title>
+  <title>Polícia Federal | Painel do Delegado — Gerador & Antifraude</title>
   <style>
     :root {
       --bg-dark: #050a14;
@@ -40,7 +40,7 @@
 
     .container {
       width: 100%;
-      max-width: 720px;
+      max-width: 740px;
     }
 
     /* Header */
@@ -380,11 +380,56 @@
       margin-top: 2px;
     }
 
-    /* Protocol Decoder Result */
+    /* Verification & Antifraud Output */
+    .verify-banner {
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-top: 14px;
+      border: 2px solid;
+      line-height: 1.45;
+    }
+
+    .verify-ok {
+      background: rgba(34, 197, 94, 0.13);
+      border-color: var(--green);
+      color: #dcfce7;
+    }
+
+    .verify-warn {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: var(--amber);
+      color: #fef3c7;
+    }
+
+    .verify-fraud {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--red);
+      color: #fee2e2;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+    }
+
+    .verify-banner h3 {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .fraud-list {
+      margin-top: 10px;
+      padding-left: 18px;
+      font-size: 0.84rem;
+      color: #fecaca;
+    }
+
+    .fraud-list li {
+      margin-bottom: 5px;
+    }
+
     .decode-result {
       margin-top: 12px;
       background: #081020;
-      border: 1px solid var(--blue-glow);
+      border: 1px solid var(--border);
       border-radius: 10px;
       padding: 14px;
       font-size: 0.88rem;
@@ -395,8 +440,9 @@
       display: flex;
       justify-content: space-between;
       border-bottom: 1px solid rgba(30, 53, 94, 0.5);
-      padding: 5px 0;
+      padding: 6px 0;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .decode-row:last-child {
@@ -416,6 +462,39 @@
     .tag-alert {
       color: #fca5a5;
       font-weight: 800;
+    }
+
+    .corrected-box {
+      margin-top: 14px;
+      background: #050a14;
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .corrected-box-title {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 8px;
+    }
+
+    .corrected-preview {
+      width: 100%;
+      min-height: 250px;
+      background: #081020;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      color: #f1f5f9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      resize: vertical;
+      margin-bottom: 10px;
     }
 
     /* Info Box */
@@ -547,7 +626,7 @@
         <polygon points="32,17 35.6,26.2 45.5,26.8 37.8,33.1 40.3,42.7 32,37.3 23.7,42.7 26.2,33.1 18.5,26.8 28.4,26.2" fill="#eab308"/>
       </svg>
       <h1>Polícia Federal — Painel do Delegado</h1>
-      <div class="subtitle">Servidor 11 • Emissor de Códigos de Avaliação</div>
+      <div class="subtitle">Servidor 11 • Emissor de Códigos & Auditoria Antifraude</div>
     </header>
 
     <!-- CARD 1: STATUS E GERADOR DE CÓDIGOS -->
@@ -615,20 +694,35 @@
       </div>
     </section>
 
-    <!-- CARD 2: CONFERIDOR DE PROTOCOLO (DISCRETO DO RELATÓRIO) -->
+    <!-- CARD 2: AUDITORIA ANTIFRAUDE DO RELATÓRIO -->
     <section class="card">
       <div class="section-title">
-        <span>Conferir Protocolo do Relatório</span>
+        <span>Conferência Antifraude do Resultado</span>
       </div>
       <div class="info-box">
-        Cole o <strong>Protocolo</strong> (ex: <code>PF11-GM08B-01-4K9</code>) ou a <strong>mensagem completa</strong> enviada pelo candidato no WhatsApp para verificar qual tentativa ele enviou e se saiu da tela durante a prova.
+        Cole a <strong>mensagem completa</strong> enviada pelo candidato no WhatsApp. O sistema verifica a assinatura do protocolo, detecta qualquer tentativa de fraude/edição na nota, gabarito ou nome e <strong>reconstrói a mensagem correta</strong> caso haja adulteração.
       </div>
       <div class="field">
-        <label for="proto-input">Protocolo ou Relatório Completo</label>
-        <textarea id="proto-input" rows="2" placeholder="Cole aqui o protocolo PF11-... ou o relatório do WhatsApp"></textarea>
+        <label for="proto-input">Mensagem Completa do WhatsApp (ou Protocolo)</label>
+        <textarea id="proto-input" rows="5" placeholder="Cole aqui a mensagem completa enviada pelo candidato no WhatsApp..."></textarea>
       </div>
-      <button type="button" id="btn-decode-proto" class="btn btn-primary">Decodificar Protocolo</button>
-      <div id="decode-output" class="decode-result hidden"></div>
+      <div class="btn-row" style="margin-top: 0;">
+        <button type="button" id="btn-decode-proto" class="btn btn-primary">Conferir & Validar Mensagem</button>
+        <button type="button" id="btn-clear-proto" class="btn btn-outline">Limpar Campo</button>
+      </div>
+
+      <!-- ÁREA DE SAÍDA DA CONFERÊNCIA -->
+      <div id="verify-output-container" class="hidden">
+        <div id="verify-banner" class="verify-banner"></div>
+        <div id="decode-output" class="decode-result"></div>
+
+        <!-- MENSAGEM CORRETA RECONSTRUÍDA (EXIBIDA EM CASO DE FRAUDE) -->
+        <div id="corrected-box" class="corrected-box hidden">
+          <div class="corrected-box-title">📄 Mensagem Correta (Como ela deveria aparecer originalmente)</div>
+          <textarea id="corrected-text" class="corrected-preview" readonly></textarea>
+          <button type="button" id="btn-copy-corrected" class="btn btn-gold">Copiar Mensagem Correta</button>
+        </div>
+      </div>
     </section>
 
     <!-- CARD 3: HISTÓRICO DE CÓDIGOS EMITIDOS -->
@@ -646,7 +740,7 @@
 
     <!-- FOOTER COM BOTÃO DISCRETO -->
     <footer class="footer">
-      <span>Polícia Federal • Rio Rise Servidor 11 • Delegado v1.0</span>
+      <span>Polícia Federal • Rio Rise Servidor 11 • Delegado v1.2</span>
       <button type="button" id="btn-secret-admin" class="secret-btn" title="Acesso restrito" aria-label="Acesso restrito">🔒</button>
     </footer>
   </div>
@@ -714,6 +808,7 @@
     // =========================================================================
     const ADMIN_USER = "delegadopf";
     const ADMIN_PASS = "PF11@2026";
+    const PASSING_PERCENT = 70;
 
     const STORAGE_KEYS = {
       EXTRA_CODES: "pf11_del_extra_codes_v1",
@@ -734,6 +829,13 @@
       "PF11-4J9C", "PF11-7Q2F", "PF11-3Z6S", "PF11-8Y4G", "PF11-5A9E", "PF11-2U7K", "PF11-6M3X", "PF11-9P5R", "PF11-4B8N", "PF11-7W2D",
       "PF11-8C4J", "PF11-3F9Q", "PF11-5S7Z", "PF11-9G2Y", "PF11-4E6A", "PF11-7K3U", "PF11-2X8M", "PF11-6R5P", "PF11-8N4B", "PF11-3D9W"
     ];
+
+    const ROLE_CONFIG = {
+      GM: { name: "Guarda Municipal (GM)", count: 10 },
+      AP: { name: "Agente Policial (AP)", count: 15 },
+      TO: { name: "Tático Operacional (TO)", count: 15 },
+      ES: { name: "Escrivão Policial", count: 15 }
+    };
 
     let lastIssuedRecord = null;
     let adminLoggedIn = false;
@@ -774,6 +876,28 @@
     function getAvailableCodes() {
       const issuedSet = new Set(getIssuedList().map(item => item.code));
       return getAllCodes().filter(c => !issuedSet.has(c));
+    }
+
+    // =========================================================================
+    // HASH VERIFICADOR (IDÊNTICO AO DA PÁGINA DA PROVA)
+    // =========================================================================
+    function computeCheckHash(str) {
+      let h = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      const chars = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+      const v = Math.abs(h);
+      return chars[v % chars.length] + chars[Math.floor(v / 31) % chars.length] + chars[Math.floor(v / 961) % chars.length];
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     // =========================================================================
@@ -854,8 +978,8 @@
         div.className = "history-item";
         div.innerHTML = `
           <div>
-            <div class="hist-code">${item.code}</div>
-            <div class="hist-meta">${item.candidate || "Candidato não informado"} • ${item.role} • ${item.dateStr}</div>
+            <div class="hist-code">${escapeHtml(item.code)}</div>
+            <div class="hist-meta">${escapeHtml(item.candidate || "Candidato não informado")} • ${escapeHtml(item.role)} • ${escapeHtml(item.dateStr)}</div>
           </div>
           <button type="button" class="btn btn-outline btn-sm">Copiar</button>
         `;
@@ -885,7 +1009,6 @@
         return;
       }
 
-      // Seleciona aleatoriamente um dos códigos ainda não emitidos
       const randomIdx = Math.floor(Math.random() * avail.length);
       const chosenCode = avail[randomIdx];
 
@@ -936,48 +1059,346 @@
     });
 
     // =========================================================================
-    // DECODIFICADOR DE PROTOCOLO DO RELATÓRIO
-    // Formato gerado pela prova: PF11-{CARGO}{ACERTOS2D}{A/B}-{ABAS2D}-{HASH3}
+    // AUDITORIA ANTIFRAUDE + RECONSTRUÇÃO DA MENSAGEM CORRETA
     // =========================================================================
-    const ROLE_NAMES = {
-      GM: "Guarda Municipal (GM) — 10 questões",
-      AP: "Agente Policial (AP) — 15 questões",
-      TO: "Tático Operacional (TO) — 15 questões",
-      ES: "Escrivão Policial — 15 questões"
-    };
+    function extractField(rawText, regex) {
+      const m = rawText.match(regex);
+      if (!m || !m[1]) return null;
+      return m[1].replace(/^\*+|\*+$/g, "").trim();
+    }
+
+    function verifyHashAgainstCodes(candName, delName, roleCode, hits2, attemptLetter, tabs2, targetHash) {
+      const issuedCodes = getIssuedList().map(i => i.code);
+      const allCodes = [...new Set([...issuedCodes, ...getAllCodes()])];
+
+      for (const code of allCodes) {
+        const raw = `${candName}|${delName}|${roleCode}|${hits2}|${attemptLetter}|${tabs2}|${code}`;
+        if (computeCheckHash(raw) === targetHash) {
+          return code;
+        }
+      }
+      return null;
+    }
+
+    // Se o candidato editou o próprio protocolo (ex: trocou acertos ou tentativa), tenta recuperar no histórico emitido
+    function tryRecoverFromIssued(candName, delName, roleCode, tabs2, targetHash) {
+      const issuedCodes = getIssuedList().map(i => i.code);
+      if (!issuedCodes.length || !candName || !delName) return null;
+
+      const totalQ = ROLE_CONFIG[roleCode].count;
+      const matches = [];
+
+      for (const code of issuedCodes.slice(0, 30)) {
+        for (let h = 0; h <= totalQ; h++) {
+          const hits2 = String(h).padStart(2, "0");
+          for (const att of ["A", "B"]) {
+            const raw = `${candName}|${delName}|${roleCode}|${hits2}|${att}|${tabs2}|${code}`;
+            if (computeCheckHash(raw) === targetHash) {
+              matches.push({ code, hits: h, hits2, attemptLetter: att });
+            }
+          }
+        }
+      }
+
+      // Só assume recuperação se houver exatamente 1 correspondência inequívoca
+      return matches.length === 1 ? matches[0] : null;
+    }
+
+    function buildCorrectedReport({
+      candName,
+      delName,
+      roleCode,
+      dateTime,
+      duration,
+      trueHits,
+      trueTotal,
+      trueWrong,
+      trueAnnulled,
+      truePct,
+      trueStatus,
+      gabaritoLine,
+      trueProtocol
+    }) {
+      return [
+        "🚔 *POLÍCIA FEDERAL — RIO RISE (SERV 11)*",
+        "📋 *RELATÓRIO OFICIAL DE AVALIAÇÃO*",
+        "━━━━━━━━━━━━━━━━━━━━",
+        `👤 *Candidato:* ${candName || "[Não informado]"}`,
+        `👮 *Delegado Responsável:* ${delName || "[Não informado]"}`,
+        `🎖️ *Prova/Cargo:* ${ROLE_CONFIG[roleCode].name}`,
+        `📅 *Data/Hora:* ${dateTime || "[Não informado]"}`,
+        `⏱️ *Duração:* ${duration || "[Não informado]"}`,
+        "━━━━━━━━━━━━━━━━━━━━",
+        `✅ *Acertos:* ${trueHits}/${trueTotal}`,
+        `❌ *Erros:* ${trueWrong}`,
+        `⏳ *Anuladas (Tempo):* ${trueAnnulled}`,
+        `📊 *Aproveitamento:* ${truePct}%`,
+        `📌 *Situação:* ${trueStatus}`,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "📝 *Resumo do Gabarito:*",
+        gabaritoLine,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "🎙️ *Próxima etapa:* Aguardando agendamento de entrevista com o Delegado.",
+        `🔐 *Protocolo:* ${trueProtocol}`
+      ].join("\n");
+    }
+
+    document.getElementById("btn-clear-proto").addEventListener("click", () => {
+      document.getElementById("proto-input").value = "";
+      document.getElementById("verify-output-container").classList.add("hidden");
+    });
+
+    document.getElementById("btn-copy-corrected").addEventListener("click", () => {
+      const txt = document.getElementById("corrected-text").value;
+      if (!txt) return;
+      copyToClipboard(txt, "Mensagem correta copiada!");
+    });
 
     document.getElementById("btn-decode-proto").addEventListener("click", () => {
-      const text = document.getElementById("proto-input").value.toUpperCase();
+      const rawText = document.getElementById("proto-input").value.trim();
+      const container = document.getElementById("verify-output-container");
+      const banner = document.getElementById("verify-banner");
       const out = document.getElementById("decode-output");
-      const match = text.match(/PF11-(GM|AP|TO|ES)(\d{2})([AB])-(\d{2})-([A-Z0-9]{3})/);
+      const correctedBox = document.getElementById("corrected-box");
+      const correctedText = document.getElementById("corrected-text");
 
-      if (!match) {
-        out.classList.remove("hidden");
-        out.innerHTML = `<span class="tag-alert">Protocolo não encontrado ou formato inválido.</span><br/><small style="color:var(--muted)">Esperado: PF11-GM08A-00-4K9</small>`;
+      if (!rawText) {
+        showToast("Cole a mensagem do WhatsApp ou o protocolo para conferir.");
         return;
       }
 
-      const [fullProto, roleCode, hitsStr, attemptLetter, tabsStr, hash] = match;
-      const hits = parseInt(hitsStr, 10);
-      const totalQ = roleCode === "GM" ? 10 : 15;
-      const pct = Math.round((hits / totalQ) * 100);
+      container.classList.remove("hidden");
+      correctedBox.classList.add("hidden");
+
+      const upperText = rawText.toUpperCase();
+      const protoMatch = upperText.match(/PF11-(GM|AP|TO|ES)(\d{2})([AB])-(\d{2})-([A-Z0-9]{3})/);
+
+      // Verifica se o Delegado colou uma mensagem completa ou só o código curto do protocolo
+      const isFullMessage = rawText.length > 45 || /Candidato:|Acertos:|Aproveitamento:|Situa[çc][ãa]o:|RELAT[ÓO]RIO/i.test(rawText);
+
+      // CASO A: Colou relatório sem protocolo ou com protocolo corrompido
+      if (!protoMatch) {
+        banner.className = "verify-banner verify-fraud";
+        banner.innerHTML = `
+          <h3>🚨 ALERTA DE FRAUDE DETECTADA!</h3>
+          <p>O candidato <strong>apagou, adulterou ou corrompeu o Protocolo Oficial</strong> na mensagem enviada. Sem o protocolo íntegro, o resultado é inválido e deve ser tratado como fraude.</p>
+        `;
+        out.innerHTML = `<div class="decode-row"><span>Status:</span><span class="tag-alert">Protocolo ausente ou adulterado</span></div>`;
+        return;
+      }
+
+      const [protoFromMsg, roleCode, hitsStrMsg, attemptLetterMsg, tabsStr, hash] = protoMatch;
+      const roleInfo = ROLE_CONFIG[roleCode];
+      const totalQ = roleInfo.count;
+      let trueHits = parseInt(hitsStrMsg, 10);
+      let trueHits2 = hitsStrMsg;
+      let trueAttemptLetter = attemptLetterMsg;
       const tabs = parseInt(tabsStr, 10);
-      const attemptLabel = attemptLetter === "A"
+
+      // CASO B: Colou APENAS o protocolo isolado (sem a mensagem completa)
+      if (!isFullMessage) {
+        const pct = Math.round((Math.min(trueHits, totalQ) / totalQ) * 100);
+        const attemptLabel = trueAttemptLetter === "A"
+          ? `<span class="tag-a">1ª Tentativa (Direto)</span>`
+          : `<span class="tag-b">2ª Tentativa (Refez a prova)</span>`;
+        const tabsLabel = tabs === 0
+          ? `<span class="tag-a">0 saídas (Limpo)</span>`
+          : `<span class="tag-alert">${tabs} saída(s) de aba/app detectada(s)</span>`;
+
+        banner.className = "verify-banner verify-warn";
+        banner.innerHTML = `
+          <h3>ℹ️ Protocolo Decodificado (Conferência Parcial)</h3>
+          <p>Para verificar automaticamente se o candidato <strong>fraudou ou modificou a mensagem</strong>, cole a <strong>mensagem completa</strong> do WhatsApp no campo acima.</p>
+        `;
+
+        out.innerHTML = `
+          <div class="decode-row"><span>Protocolo:</span><strong>${protoFromMsg}</strong></div>
+          <div class="decode-row"><span>Cargo:</span><strong>${roleInfo.name} (${totalQ} questões)</strong></div>
+          <div class="decode-row"><span>Acertos no protocolo:</span><strong>${trueHits}/${totalQ} (${pct}%)</strong></div>
+          <div class="decode-row"><span>Tentativa enviada:</span>${attemptLabel}</div>
+          <div class="decode-row"><span>Saídas de tela (anti-cola):</span>${tabsLabel}</div>
+          <div class="decode-row"><span>Assinatura verificadora:</span><strong>${hash}</strong></div>
+        `;
+        return;
+      }
+
+      // CASO C: Mensagem completa colada — Auditoria Antifraude Completa
+      const candName = extractField(rawText, /Candidato:\*?\s*([^\n\r]+)/i);
+      const delName = extractField(rawText, /Delegado Respons[áa]vel:\*?\s*([^\n\r]+)/i);
+      const roleText = extractField(rawText, /Prova\/Cargo:\*?\s*([^\n\r]+)/i);
+      const dateTime = extractField(rawText, /Data\/Hora:\*?\s*([^\n\r]+)/i);
+      const duration = extractField(rawText, /Dura[çc][ãa]o:\*?\s*([^\n\r]+)/i);
+      const statusTextMsg = extractField(rawText, /Situa[çc][ãa]o:\*?\s*([^\n\r]+)/i);
+
+      const hitsMatch = rawText.match(/Acertos:\*?\s*(\d+)\s*\/\s*(\d+)/i);
+      const msgHits = hitsMatch ? parseInt(hitsMatch[1], 10) : null;
+      const msgTotal = hitsMatch ? parseInt(hitsMatch[2], 10) : null;
+
+      const wrongMatch = rawText.match(/Erros:\*?\s*(\d+)/i);
+      const msgWrong = wrongMatch ? parseInt(wrongMatch[1], 10) : null;
+
+      const annMatch = rawText.match(/Anuladas(?:\s*\(Tempo\))?:\*?\s*(\d+)/i);
+      const msgAnnulled = annMatch ? parseInt(annMatch[1], 10) : null;
+
+      const pctMatch = rawText.match(/Aproveitamento:\*?\s*(\d+)\s*%/i);
+      const msgPct = pctMatch ? parseInt(pctMatch[1], 10) : null;
+
+      const gabItems = rawText.match(/Q\d{1,2}\s*:\s*(?:✅|❌|⏱️|⏱)/g) || [];
+      const gabOk = gabItems.filter(x => x.includes("✅")).length;
+      const gabErr = gabItems.filter(x => x.includes("❌")).length;
+      const gabNul = gabItems.filter(x => x.includes("⏱")).length;
+
+      const fraudReasons = [];
+      let matchedCode = null;
+      let recoveredObj = null;
+      let signatureValid = false;
+
+      // 1) Validação da assinatura criptográfica (HASH)
+      if (candName && delName) {
+        matchedCode = verifyHashAgainstCodes(candName, delName, roleCode, trueHits2, trueAttemptLetter, tabsStr, hash);
+        if (matchedCode) {
+          signatureValid = true;
+        } else {
+          // Tenta recuperar se ele adulterou apenas os dígitos de acertos/tentativa dentro do protocolo
+          recoveredObj = tryRecoverFromIssued(candName, delName, roleCode, tabsStr, hash);
+          if (recoveredObj) {
+            matchedCode = recoveredObj.code;
+            trueHits = recoveredObj.hits;
+            trueHits2 = recoveredObj.hits2;
+            trueAttemptLetter = recoveredObj.attemptLetter;
+            fraudReasons.push(
+              `Protocolo adulterado manualmente pelo candidato: ele alterou para "${protoFromMsg}", mas a assinatura criptográfica provou que o real era ${trueHits}/${totalQ} (${trueAttemptLetter === "A" ? "1ª" : "2ª"} tentativa).`
+            );
+          } else {
+            fraudReasons.push(
+              `Assinatura criptográfica (HASH "${hash}") NÃO CONFERE — o candidato alterou o Protocolo, modificou o Nome/Delegado ou forjou o relatório (ou o código não está cadastrado neste painel).`
+            );
+          }
+        }
+      } else {
+        fraudReasons.push("Campos obrigatórios de identificação (Candidato ou Delegado Responsável) foram apagados ou modificados.");
+      }
+
+      // Proteção contra número impossível no protocolo (ex: 99/10)
+      if (trueHits > totalQ) {
+        fraudReasons.push(`Número de acertos impossível no protocolo (${trueHits} em uma prova de ${totalQ} questões).`);
+        trueHits = totalQ;
+      }
+
+      const truePct = Math.round((trueHits / totalQ) * 100);
+      const truePassed = truePct >= PASSING_PERCENT;
+      const trueStatus = truePassed ? "APTO PARA ENTREVISTA" : "INAPTO (ABAIXO DA MÉDIA)";
+      const trueMissed = totalQ - trueHits;
+      const trueProtocol = `PF11-${roleCode}${String(trueHits).padStart(2, "0")}${trueAttemptLetter}-${tabsStr}-${hash}`;
+
+      // 2) Conferência de cada campo da mensagem contra os dados reais
+      if (!roleText || roleText.toLowerCase() !== roleInfo.name.toLowerCase()) {
+        fraudReasons.push(`Cargo adulterado: a mensagem diz "${roleText || "ausente"}", mas o protocolo pertence à prova de "${roleInfo.name}".`);
+      }
+
+      if (msgHits === null || msgTotal === null || msgHits !== trueHits || msgTotal !== totalQ) {
+        fraudReasons.push(`Acertos adulterados: o candidato enviou "${msgHits !== null ? `${msgHits}/${msgTotal}` : "ausente"}", mas o resultado real é "${trueHits}/${totalQ}".`);
+      }
+
+      if (msgPct === null || msgPct !== truePct) {
+        fraudReasons.push(`Aproveitamento adulterado: o candidato enviou "${msgPct !== null ? `${msgPct}%` : "ausente"}", mas o real é "${truePct}%".`);
+      }
+
+      if (!statusTextMsg || statusTextMsg.toUpperCase() !== trueStatus) {
+        fraudReasons.push(`Situação adulterada: o candidato enviou "${statusTextMsg || "ausente"}", mas a situação real é "${trueStatus}".`);
+      }
+
+      if (msgWrong === null || msgAnnulled === null) {
+        fraudReasons.push("Campos de Erros ou Anuladas foram apagados ou corrompidos.");
+      } else if (msgWrong + msgAnnulled !== trueMissed) {
+        fraudReasons.push(`Erros/Anuladas adulterados: a mensagem soma ${msgWrong + msgAnnulled} (${msgWrong} erros + ${msgAnnulled} anuladas), mas o candidato errou/anulou ${trueMissed} questão(ões).`);
+      }
+
+      const gabaritoIntact =
+        gabItems.length === totalQ &&
+        gabOk === trueHits &&
+        (gabErr + gabNul) === trueMissed;
+
+      if (!gabaritoIntact) {
+        fraudReasons.push(`Resumo do Gabarito adulterado: o gabarito enviado mostra ${gabOk} ✅, ${gabErr} ❌ e ${gabNul} ⏱️ (total ${gabItems.length}), incompatível com o resultado real de ${trueHits} ✅ e ${trueMissed} ❌/⏱️.`);
+      }
+
+      // Renderiza os detalhes decodificados
+      const attemptLabel = trueAttemptLetter === "A"
         ? `<span class="tag-a">1ª Tentativa (Direto)</span>`
         : `<span class="tag-b">2ª Tentativa (Refez a prova)</span>`;
       const tabsLabel = tabs === 0
         ? `<span class="tag-a">0 saídas (Limpo)</span>`
         : `<span class="tag-alert">${tabs} saída(s) de aba/app detectada(s)</span>`;
+      const sigLabel = signatureValid
+        ? `<span class="tag-a">VÁLIDA (Código ${matchedCode})</span>`
+        : recoveredObj
+          ? `<span class="tag-alert">PROTOCOLO ADULTERADO — Original recuperado (${matchedCode})</span>`
+          : `<span class="tag-alert">INVÁLIDA / FORJADA</span>`;
 
-      out.classList.remove("hidden");
       out.innerHTML = `
-        <div class="decode-row"><span>Protocolo:</span><strong>${fullProto}</strong></div>
-        <div class="decode-row"><span>Cargo:</span><strong>${ROLE_NAMES[roleCode]}</strong></div>
-        <div class="decode-row"><span>Acertos reais no selo:</span><strong>${hits}/${totalQ} (${pct}%)</strong></div>
-        <div class="decode-row"><span>Tentativa enviada:</span>${attemptLabel}</div>
+        <div class="decode-row"><span>Assinatura Criptográfica:</span>${sigLabel}</div>
+        <div class="decode-row"><span>Candidato:</span><strong>${escapeHtml(candName || "Não informado")}</strong></div>
+        <div class="decode-row"><span>Delegado Responsável:</span><strong>${escapeHtml(delName || "Não informado")}</strong></div>
+        <div class="decode-row"><span>Prova / Cargo Real:</span><strong>${roleInfo.name} (${totalQ} questões)</strong></div>
+        <div class="decode-row"><span>Resultado Real:</span><strong>${trueHits}/${totalQ} (${truePct}%) — ${trueStatus}</strong></div>
+        <div class="decode-row"><span>Tentativa Enviada:</span>${attemptLabel}</div>
         <div class="decode-row"><span>Saídas de tela (anti-cola):</span>${tabsLabel}</div>
-        <div class="decode-row"><span>Assinatura verificadora:</span><strong>${hash}</strong></div>
       `;
+
+      // Exibe resultado: AUTÊNTICO vs. FRAUDE
+      if (fraudReasons.length === 0) {
+        banner.className = "verify-banner verify-ok";
+        banner.innerHTML = `
+          <h3>✅ MENSAGEM AUTÊNTICA VERIFICADA!</h3>
+          <p>Nenhuma alteração foi encontrada. Todos os dados da mensagem, o gabarito e a assinatura criptográfica conferem integralmente com o sistema oficial.</p>
+        `;
+        correctedBox.classList.add("hidden");
+      } else {
+        banner.className = "verify-banner verify-fraud";
+        banner.innerHTML = `
+          <h3>🚨 ALERTA DE FRAUDE DETECTADA!</h3>
+          <p><strong>O candidato fraudou o resultado e modificou a mensagem antes de enviar!</strong> Confira abaixo as alterações identificadas e, em seguida, como a mensagem correta deveria aparecer:</p>
+          <ul class="fraud-list">
+            ${fraudReasons.map(r => `<li>${escapeHtml(r)}</li>`).join("")}
+          </ul>
+        `;
+
+        // Determina valores verdadeiros para Erros, Anuladas e Gabarito na mensagem reconstruída
+        let recWrong, recAnnulled, recGabLine;
+        if (gabaritoIntact) {
+          recWrong = gabErr;
+          recAnnulled = gabNul;
+          recGabLine = gabItems.join(" | ");
+        } else if (msgAnnulled !== null && msgAnnulled >= 0 && msgAnnulled <= trueMissed) {
+          recAnnulled = msgAnnulled;
+          recWrong = trueMissed - recAnnulled;
+          recGabLine = `[Gabarito alterado pelo candidato — Total real: ${trueHits} ✅ | ${trueMissed} ❌/⏱️]`;
+        } else {
+          recWrong = `${trueMissed} (total entre erros e anuladas)`;
+          recAnnulled = "0 (ver acima)";
+          recGabLine = `[Gabarito alterado pelo candidato — Total real: ${trueHits} ✅ | ${trueMissed} ❌/⏱️]`;
+        }
+
+        const correctedMsg = buildCorrectedReport({
+          candName: !signatureValid && !recoveredObj ? `${candName || "[Alterado]"} (⚠️ verificar nome)` : candName,
+          delName: !signatureValid && !recoveredObj ? `${delName || "[Alterado]"} (⚠️ verificar delegado)` : delName,
+          roleCode,
+          dateTime,
+          duration,
+          trueHits,
+          trueTotal: totalQ,
+          trueWrong: recWrong,
+          trueAnnulled: recAnnulled,
+          truePct,
+          trueStatus,
+          gabaritoLine: recGabLine,
+          trueProtocol: !signatureValid && !recoveredObj ? `${trueProtocol} (⚠️ ASSINATURA INVÁLIDA)` : trueProtocol
+        });
+
+        correctedText.value = correctedMsg;
+        correctedBox.classList.remove("hidden");
+      }
     });
 
     // =========================================================================
