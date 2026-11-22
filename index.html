@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Polícia Federal | Painel do Delegado — Gerador de Códigos</title>
+  <style>
+    :root {
+      --bg-dark: #050a14;
+      --bg-card: #0c1527;
+      --bg-card-alt: #12203b;
+      --border: #1e355e;
+      --blue: #2563eb;
+      --blue-glow: #38bdf8;
+      --gold: #eab308;
+      --gold-soft: #fde047;
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0f1f3d 0%, var(--bg-dark) 65%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 32px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 18px 16px;
+      background: linear-gradient(180deg, rgba(18, 32, 59, 0.95), rgba(12, 21, 39, 0.95));
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    .badge-svg {
+      width: 54px;
+      height: 54px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.35));
+    }
+
+    .header h1 {
+      font-size: 1.3rem;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .header .subtitle {
+      font-size: 0.8rem;
+      color: var(--gold-soft);
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      margin-bottom: 16px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      color: var(--blue-glow);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Alert Banner for Remaining Codes */
+    .stock-banner {
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stock-ok {
+      background: rgba(37, 99, 235, 0.12);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #e0f2fe;
+    }
+
+    .stock-warn {
+      background: rgba(245, 158, 11, 0.14);
+      border-color: var(--amber);
+      color: #fef3c7;
+    }
+
+    .stock-empty {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: var(--red);
+      color: #fecaca;
+    }
+
+    .stock-banner strong {
+      font-size: 0.96rem;
+    }
+
+    .stock-banner small {
+      display: block;
+      font-size: 0.78rem;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .stock-pill {
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 99px;
+      background: rgba(5, 10, 20, 0.65);
+      border: 1px solid currentColor;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      background: #081020;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .stat-box .val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .stat-box .lbl {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Form Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 540px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 11px 13px;
+      background: #070e1c;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--blue-glow);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #eab308, #ca8a04);
+      color: #050a14;
+      box-shadow: 0 4px 14px rgba(234, 179, 8, 0.35);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--red);
+      color: #fca5a5;
+    }
+
+    .btn-sm {
+      width: auto;
+      padding: 7px 12px;
+      font-size: 0.75rem;
+      border-radius: 8px;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 500px) {
+      .btn-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Generated Code Display */
+    .code-result-box {
+      margin-top: 16px;
+      background: linear-gradient(135deg, rgba(18, 32, 59, 0.95), rgba(7, 14, 28, 0.98));
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 0 22px rgba(234, 179, 8, 0.18);
+    }
+
+    .code-result-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .code-big {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--gold-soft);
+      background: #050a14;
+      border: 1px dashed rgba(234, 179, 8, 0.5);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      user-select: all;
+    }
+
+    /* History List */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      background: #081020;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hist-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+      color: var(--gold-soft);
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    .hist-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Protocol Decoder Result */
+    .decode-result {
+      margin-top: 12px;
+      background: #081020;
+      border: 1px solid var(--blue-glow);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .decode-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(30, 53, 94, 0.5);
+      padding: 5px 0;
+      gap: 10px;
+    }
+
+    .decode-row:last-child {
+      border-bottom: none;
+    }
+
+    .tag-a {
+      color: #86efac;
+      font-weight: 800;
+    }
+
+    .tag-b {
+      color: #fde047;
+      font-weight: 800;
+    }
+
+    .tag-alert {
+      color: #fca5a5;
+      font-weight: 800;
+    }
+
+    /* Info Box */
+    .info-box {
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-left: 4px solid var(--blue-glow);
+      border-radius: 10px;
+      padding: 11px 13px;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .error-msg {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid var(--red);
+      color: #fecaca;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      margin-bottom: 12px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      border: 1px solid var(--gold);
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      max-width: 92vw;
+      text-align: center;
+    }
+
+    /* Footer & Discreet Admin Button */
+    .footer {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .secret-btn {
+      background: transparent;
+      border: none;
+      color: #334155;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      opacity: 0.45;
+      transition: opacity 0.2s, color 0.2s;
+    }
+
+    .secret-btn:hover {
+      opacity: 0.9;
+      color: var(--muted);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 15, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9000;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 500px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .batch-area {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <header class="header">
+      <svg class="badge-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 4L8 14V31C8 46.5 18.2 57.6 32 61C45.8 57.6 56 46.5 56 31V14L32 4Z" fill="#0d1b36" stroke="#eab308" stroke-width="3"/>
+        <path d="M32 10L14 17.5V30.5C14 42.6 21.7 51.3 32 54.4C42.3 51.3 50 42.6 50 30.5V17.5L32 10Z" fill="#172d58" stroke="#38bdf8" stroke-width="1.5"/>
+        <polygon points="32,17 35.6,26.2 45.5,26.8 37.8,33.1 40.3,42.7 32,37.3 23.7,42.7 26.2,33.1 18.5,26.8 28.4,26.2" fill="#eab308"/>
+      </svg>
+      <h1>Polícia Federal — Painel do Delegado</h1>
+      <div class="subtitle">Servidor 11 • Emissor de Códigos de Avaliação</div>
+    </header>
+
+    <!-- CARD 1: STATUS E GERADOR DE CÓDIGOS -->
+    <section class="card">
+      <div class="section-title">
+        <span>Controle & Emissão de Códigos</span>
+      </div>
+
+      <!-- AVISO DE CÓDIGOS RESTANTES -->
+      <div id="stock-banner" class="stock-banner stock-ok">
+        <div>
+          <strong id="stock-title">Códigos disponíveis para emissão</strong>
+          <small id="stock-sub">Cada código só pode ser gerado uma única vez.</small>
+        </div>
+        <div class="stock-pill" id="stock-remaining-pill">100</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="val" id="stat-avail" style="color: var(--green);">100</div>
+          <div class="lbl">Restantes</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="stat-issued" style="color: var(--gold-soft);">0</div>
+          <div class="lbl">Já Gerados</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" id="stat-total" style="color: var(--blue-glow);">100</div>
+          <div class="lbl">Total no Lote</div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field" style="margin-bottom: 0;">
+          <label for="cand-name">Nome do Candidato (Opcional)</label>
+          <input type="text" id="cand-name" placeholder="Ex: Carlos_Silva" autocomplete="off" />
+        </div>
+        <div class="field" style="margin-bottom: 0;">
+          <label for="cand-role">Cargo / Prova (Opcional)</label>
+          <select id="cand-role">
+            <option value="Guarda Municipal (GM)">Guarda Municipal (GM)</option>
+            <option value="Agente Policial (AP)">Agente Policial (AP)</option>
+            <option value="Tático Operacional (TO)">Tático Operacional (TO)</option>
+            <option value="Escrivão Policial">Escrivão Policial</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 12px;">
+        <label for="exam-url">Link da Página da Prova (Salvo automaticamente p/ WhatsApp)</label>
+        <input type="url" id="exam-url" placeholder="https://sua-prova-pf.netlify.app" />
+      </div>
+
+      <button type="button" id="btn-issue-code" class="btn btn-gold">Gerar Novo Código Único</button>
+
+      <!-- RESULTADO DO CÓDIGO GERADO -->
+      <div id="code-result-box" class="code-result-box hidden">
+        <div class="code-result-label">Código Único Emitido (Não poderá ser gerado novamente)</div>
+        <div class="code-big" id="generated-code-display">PF11-XXXX</div>
+        <div id="generated-meta" style="font-size: 0.82rem; color: var(--muted); margin-bottom: 10px;"></div>
+        <div class="btn-row">
+          <button type="button" id="btn-copy-code" class="btn btn-primary">Copiar Código</button>
+          <button type="button" id="btn-send-wa" class="btn btn-green">Enviar no WhatsApp</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARD 2: CONFERIDOR DE PROTOCOLO (DISCRETO DO RELATÓRIO) -->
+    <section class="card">
+      <div class="section-title">
+        <span>Conferir Protocolo do Relatório</span>
+      </div>
+      <div class="info-box">
+        Cole o <strong>Protocolo</strong> (ex: <code>PF11-GM08B-01-4K9</code>) ou a <strong>mensagem completa</strong> enviada pelo candidato no WhatsApp para verificar qual tentativa ele enviou e se saiu da tela durante a prova.
+      </div>
+      <div class="field">
+        <label for="proto-input">Protocolo ou Relatório Completo</label>
+        <textarea id="proto-input" rows="2" placeholder="Cole aqui o protocolo PF11-... ou o relatório do WhatsApp"></textarea>
+      </div>
+      <button type="button" id="btn-decode-proto" class="btn btn-primary">Decodificar Protocolo</button>
+      <div id="decode-output" class="decode-result hidden"></div>
+    </section>
+
+    <!-- CARD 3: HISTÓRICO DE CÓDIGOS EMITIDOS -->
+    <section class="card">
+      <div class="section-title">
+        <span>Histórico de Códigos Emitidos</span>
+        <span id="hist-count-badge" style="font-size: 0.78rem; color: var(--muted);">0 emitidos</span>
+      </div>
+      <div id="history-list" class="history-list">
+        <div style="font-size: 0.84rem; color: var(--muted); text-align: center; padding: 14px;">
+          Nenhum código emitido ainda neste dispositivo.
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER COM BOTÃO DISCRETO -->
+    <footer class="footer">
+      <span>Polícia Federal • Rio Rise Servidor 11 • Delegado v1.0</span>
+      <button type="button" id="btn-secret-admin" class="secret-btn" title="Acesso restrito" aria-label="Acesso restrito">🔒</button>
+    </footer>
+  </div>
+
+  <!-- MODAL ADMIN OCULTO (GERADOR DE NOVOS LOTES) -->
+  <div id="admin-modal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <strong style="color: var(--gold-soft); letter-spacing: 1px; text-transform: uppercase;">Painel Restrito — Novos Lotes</strong>
+        <button type="button" id="btn-close-modal" class="modal-close">&times;</button>
+      </div>
+
+      <!-- LOGIN ADMIN -->
+      <div id="admin-login-box">
+        <div id="admin-login-err" class="error-msg hidden"></div>
+        <div class="field">
+          <label for="adm-user">Usuário</label>
+          <input type="text" id="adm-user" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="adm-pass">Senha</label>
+          <input type="password" id="adm-pass" autocomplete="off" />
+        </div>
+        <button type="button" id="btn-adm-login" class="btn btn-gold">Entrar</button>
+      </div>
+
+      <!-- PAINEL LOGADO -->
+      <div id="admin-panel-box" class="hidden">
+        <div class="info-box">
+          Gere um novo lote de códigos únicos abaixo. Eles já entram automaticamente na sua fila de emissão aqui — depois, clique em <strong>Copiar Lote</strong> e cole no painel oculto (🔒) da <strong>Página da Prova</strong>.
+        </div>
+
+        <div class="field">
+          <label for="adm-batch-qty">Quantidade de Novos Códigos</label>
+          <select id="adm-batch-qty">
+            <option value="25">25 novos códigos</option>
+            <option value="50">50 novos códigos</option>
+            <option value="100" selected>100 novos códigos</option>
+          </select>
+        </div>
+
+        <button type="button" id="btn-adm-gen-batch" class="btn btn-gold" style="margin-bottom: 14px;">Gerar Novo Lote de Códigos</button>
+
+        <div id="adm-batch-result" class="hidden">
+          <div class="field">
+            <label for="adm-batch-text">Novos Códigos Gerados (Cole na Página da Prova)</label>
+            <textarea id="adm-batch-text" class="batch-area" rows="5" readonly></textarea>
+          </div>
+          <button type="button" id="btn-adm-copy-batch" class="btn btn-green" style="margin-bottom: 12px;">Copiar Lote para Página da Prova</button>
+        </div>
+
+        <div class="btn-row" style="margin-top: 4px;">
+          <button type="button" id="btn-adm-show-all-extra" class="btn btn-outline">Ver Todos Extras</button>
+          <button type="button" id="btn-adm-reset-issued" class="btn btn-danger">Zerar Histórico (Teste)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÕES PRINCIPAIS (IDÊNTICAS À PÁGINA DA PROVA)
+    // =========================================================================
+    const ADMIN_USER = "delegadopf";
+    const ADMIN_PASS = "PF11@2026";
+
+    const STORAGE_KEYS = {
+      EXTRA_CODES: "pf11_del_extra_codes_v1",
+      ISSUED_LIST: "pf11_del_issued_list_v1",
+      EXAM_URL: "pf11_del_exam_url_v1"
+    };
+
+    // MESMOS 100 CÓDIGOS PRÉ-DEFINIDOS DA PÁGINA DA PROVA
+    const DEFAULT_CODES = [
+      "PF11-7K2M", "PF11-4X9P", "PF11-8B3R", "PF11-2N6W", "PF11-9D5H", "PF11-3V8J", "PF11-6T4C", "PF11-5F7Q", "PF11-2Y9Z", "PF11-8G3S",
+      "PF11-4M6K", "PF11-9P2X", "PF11-3R8B", "PF11-6W5N", "PF11-7H4D", "PF11-2J9V", "PF11-8C3T", "PF11-5Q7F", "PF11-9Z2Y", "PF11-4S6G",
+      "PF11-6A9E", "PF11-3U7K", "PF11-8M2P", "PF11-5X4R", "PF11-9B6W", "PF11-2N8H", "PF11-7D3J", "PF11-4V5C", "PF11-8T9Q", "PF11-3F2Z",
+      "PF11-5E8A", "PF11-9K3U", "PF11-2P7M", "PF11-6R4X", "PF11-8W5B", "PF11-3H9N", "PF11-7J2D", "PF11-4C8V", "PF11-9Q3T", "PF11-2Z6F",
+      "PF11-7Y4S", "PF11-3G8A", "PF11-6E2U", "PF11-9K5M", "PF11-4P7X", "PF11-8R3B", "PF11-2W9N", "PF11-5H6D", "PF11-7J4V", "PF11-3C8Q",
+      "PF11-8S2Y", "PF11-4A7G", "PF11-9U3E", "PF11-2M6K", "PF11-5X8P", "PF11-7B4R", "PF11-3N9W", "PF11-6D2H", "PF11-8V5J", "PF11-4Q7C",
+      "PF11-9T3F", "PF11-2Z8S", "PF11-6Y4A", "PF11-3G9U", "PF11-7E2M", "PF11-4K6X", "PF11-8P3B", "PF11-5R7N", "PF11-2W4D", "PF11-9H8V",
+      "PF11-3F7T", "PF11-6S2Z", "PF11-8A5Y", "PF11-4U9G", "PF11-2M3E", "PF11-7X6K", "PF11-9B4P", "PF11-3N8R", "PF11-5D2W", "PF11-8V7H",
+      "PF11-4J9C", "PF11-7Q2F", "PF11-3Z6S", "PF11-8Y4G", "PF11-5A9E", "PF11-2U7K", "PF11-6M3X", "PF11-9P5R", "PF11-4B8N", "PF11-7W2D",
+      "PF11-8C4J", "PF11-3F9Q", "PF11-5S7Z", "PF11-9G2Y", "PF11-4E6A", "PF11-7K3U", "PF11-2X8M", "PF11-6R5P", "PF11-8N4B", "PF11-3D9W"
+    ];
+
+    let lastIssuedRecord = null;
+    let adminLoggedIn = false;
+
+    // =========================================================================
+    // STORAGE HELPERS
+    // =========================================================================
+    function getExtraCodes() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.EXTRA_CODES);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveExtraCodes(arr) {
+      localStorage.setItem(STORAGE_KEYS.EXTRA_CODES, JSON.stringify([...new Set(arr)]));
+    }
+
+    function getIssuedList() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.ISSUED_LIST);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveIssuedList(list) {
+      localStorage.setItem(STORAGE_KEYS.ISSUED_LIST, JSON.stringify(list));
+    }
+
+    function getAllCodes() {
+      return [...new Set([...DEFAULT_CODES, ...getExtraCodes()])];
+    }
+
+    function getAvailableCodes() {
+      const issuedSet = new Set(getIssuedList().map(item => item.code));
+      return getAllCodes().filter(c => !issuedSet.has(c));
+    }
+
+    // =========================================================================
+    // UI & FEEDBACK
+    // =========================================================================
+    function showToast(msg, duration = 3000) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => el.classList.add("hidden"), duration);
+    }
+
+    async function copyToClipboard(text, successMsg) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(successMsg);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast(successMsg);
+      }
+    }
+
+    function refreshDashboard() {
+      const all = getAllCodes();
+      const issued = getIssuedList();
+      const avail = getAvailableCodes();
+
+      document.getElementById("stat-avail").textContent = avail.length;
+      document.getElementById("stat-issued").textContent = issued.length;
+      document.getElementById("stat-total").textContent = all.length;
+      document.getElementById("stock-remaining-pill").textContent = avail.length;
+
+      const banner = document.getElementById("stock-banner");
+      const title = document.getElementById("stock-title");
+      const sub = document.getElementById("stock-sub");
+      const btnIssue = document.getElementById("btn-issue-code");
+
+      banner.classList.remove("stock-ok", "stock-warn", "stock-empty");
+
+      if (avail.length === 0) {
+        banner.classList.add("stock-empty");
+        title.textContent = "Atenção: Lote de códigos esgotado!";
+        sub.textContent = "Não há mais códigos disponíveis. Acesse o painel restrito (🔒) no rodapé para gerar um novo lote.";
+        btnIssue.disabled = true;
+      } else if (avail.length <= 15) {
+        banner.classList.add("stock-warn");
+        title.textContent = `Atenção: restam apenas ${avail.length} código(s) para gerar!`;
+        sub.textContent = "Prepare um novo lote no painel restrito (🔒) antes que o estoque acabe.";
+        btnIssue.disabled = false;
+      } else {
+        banner.classList.add("stock-ok");
+        title.textContent = `Ainda podem ser gerados ${avail.length} códigos únicos`;
+        sub.textContent = "Cada código emitido é bloqueado automaticamente para não ser repetido.";
+        btnIssue.disabled = false;
+      }
+
+      renderHistory(issued);
+    }
+
+    function renderHistory(issued) {
+      const listEl = document.getElementById("history-list");
+      document.getElementById("hist-count-badge").textContent = `${issued.length} emitido(s)`;
+
+      if (!issued.length) {
+        listEl.innerHTML = `<div style="font-size:0.84rem; color:var(--muted); text-align:center; padding:14px;">Nenhum código emitido ainda neste dispositivo.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = "";
+      issued.slice(0, 40).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+          <div>
+            <div class="hist-code">${item.code}</div>
+            <div class="hist-meta">${item.candidate || "Candidato não informado"} • ${item.role} • ${item.dateStr}</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm">Copiar</button>
+        `;
+        div.querySelector("button").addEventListener("click", () => {
+          copyToClipboard(item.code, `Código ${item.code} copiado!`);
+        });
+        listEl.appendChild(div);
+      });
+    }
+
+    // =========================================================================
+    // PERSISTÊNCIA DO LINK DA PROVA
+    // =========================================================================
+    const examUrlInput = document.getElementById("exam-url");
+    examUrlInput.value = localStorage.getItem(STORAGE_KEYS.EXAM_URL) || "";
+    examUrlInput.addEventListener("input", () => {
+      localStorage.setItem(STORAGE_KEYS.EXAM_URL, examUrlInput.value.trim());
+    });
+
+    // =========================================================================
+    // EMISSÃO DE CÓDIGO ÚNICO (NUNCA REPETE)
+    // =========================================================================
+    document.getElementById("btn-issue-code").addEventListener("click", () => {
+      const avail = getAvailableCodes();
+      if (!avail.length) {
+        showToast("Lote esgotado! Gere novos códigos no painel restrito.");
+        return;
+      }
+
+      // Seleciona aleatoriamente um dos códigos ainda não emitidos
+      const randomIdx = Math.floor(Math.random() * avail.length);
+      const chosenCode = avail[randomIdx];
+
+      const candidate = document.getElementById("cand-name").value.trim();
+      const role = document.getElementById("cand-role").value;
+      const now = new Date();
+      const dateStr = `${now.toLocaleDateString("pt-BR")} ${now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+
+      const record = { code: chosenCode, candidate, role, dateStr };
+      const issued = getIssuedList();
+      issued.unshift(record);
+      saveIssuedList(issued);
+
+      lastIssuedRecord = record;
+
+      document.getElementById("generated-code-display").textContent = chosenCode;
+      document.getElementById("generated-meta").textContent =
+        `${candidate ? `Candidato: ${candidate} • ` : ""}Prova: ${role} • Emitido em ${dateStr}`;
+      document.getElementById("code-result-box").classList.remove("hidden");
+
+      document.getElementById("cand-name").value = "";
+      refreshDashboard();
+      showToast(`Código ${chosenCode} gerado com sucesso!`);
+    });
+
+    document.getElementById("btn-copy-code").addEventListener("click", () => {
+      if (!lastIssuedRecord) return;
+      copyToClipboard(lastIssuedRecord.code, `Código ${lastIssuedRecord.code} copiado!`);
+    });
+
+    document.getElementById("btn-send-wa").addEventListener("click", () => {
+      if (!lastIssuedRecord) return;
+      const url = examUrlInput.value.trim();
+      const lines = [
+        "🚔 *POLÍCIA FEDERAL — RIO RISE (SERV 11)*",
+        "📋 *CONVOCAÇÃO PARA AVALIAÇÃO OFICIAL*",
+        "━━━━━━━━━━━━━━━━━━━━",
+        lastIssuedRecord.candidate ? `👤 *Candidato:* ${lastIssuedRecord.candidate}` : null,
+        `🎖️ *Prova:* ${lastIssuedRecord.role}`,
+        `🔑 *Código de Acesso (Uso Único):* *${lastIssuedRecord.code}*`,
+        url ? `🌐 *Link da Prova:* ${url}` : null,
+        "━━━━━━━━━━━━━━━━━━━━",
+        "⏱️ Cada questão tem *1min30s* (não saia da tela durante a prova).",
+        "📩 Ao finalizar, envie o relatório gerado aqui no WhatsApp para agendarmos sua entrevista."
+      ].filter(Boolean).join("\n");
+
+      window.open(`https://wa.me/?text=${encodeURIComponent(lines)}`, "_blank");
+    });
+
+    // =========================================================================
+    // DECODIFICADOR DE PROTOCOLO DO RELATÓRIO
+    // Formato gerado pela prova: PF11-{CARGO}{ACERTOS2D}{A/B}-{ABAS2D}-{HASH3}
+    // =========================================================================
+    const ROLE_NAMES = {
+      GM: "Guarda Municipal (GM) — 10 questões",
+      AP: "Agente Policial (AP) — 15 questões",
+      TO: "Tático Operacional (TO) — 15 questões",
+      ES: "Escrivão Policial — 15 questões"
+    };
+
+    document.getElementById("btn-decode-proto").addEventListener("click", () => {
+      const text = document.getElementById("proto-input").value.toUpperCase();
+      const out = document.getElementById("decode-output");
+      const match = text.match(/PF11-(GM|AP|TO|ES)(\d{2})([AB])-(\d{2})-([A-Z0-9]{3})/);
+
+      if (!match) {
+        out.classList.remove("hidden");
+        out.innerHTML = `<span class="tag-alert">Protocolo não encontrado ou formato inválido.</span><br/><small style="color:var(--muted)">Esperado: PF11-GM08A-00-4K9</small>`;
+        return;
+      }
+
+      const [fullProto, roleCode, hitsStr, attemptLetter, tabsStr, hash] = match;
+      const hits = parseInt(hitsStr, 10);
+      const totalQ = roleCode === "GM" ? 10 : 15;
+      const pct = Math.round((hits / totalQ) * 100);
+      const tabs = parseInt(tabsStr, 10);
+      const attemptLabel = attemptLetter === "A"
+        ? `<span class="tag-a">1ª Tentativa (Direto)</span>`
+        : `<span class="tag-b">2ª Tentativa (Refez a prova)</span>`;
+      const tabsLabel = tabs === 0
+        ? `<span class="tag-a">0 saídas (Limpo)</span>`
+        : `<span class="tag-alert">${tabs} saída(s) de aba/app detectada(s)</span>`;
+
+      out.classList.remove("hidden");
+      out.innerHTML = `
+        <div class="decode-row"><span>Protocolo:</span><strong>${fullProto}</strong></div>
+        <div class="decode-row"><span>Cargo:</span><strong>${ROLE_NAMES[roleCode]}</strong></div>
+        <div class="decode-row"><span>Acertos reais no selo:</span><strong>${hits}/${totalQ} (${pct}%)</strong></div>
+        <div class="decode-row"><span>Tentativa enviada:</span>${attemptLabel}</div>
+        <div class="decode-row"><span>Saídas de tela (anti-cola):</span>${tabsLabel}</div>
+        <div class="decode-row"><span>Assinatura verificadora:</span><strong>${hash}</strong></div>
+      `;
+    });
+
+    // =========================================================================
+    // PAINEL OCULTO DE ADMINISTRAÇÃO (GERAR NOVOS LOTES DE CÓDIGOS)
+    // =========================================================================
+    const modal = document.getElementById("admin-modal");
+
+    document.getElementById("btn-secret-admin").addEventListener("click", () => {
+      document.getElementById("admin-login-err").classList.add("hidden");
+      modal.classList.remove("hidden");
+    });
+
+    document.getElementById("btn-close-modal").addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    });
+
+    document.getElementById("btn-adm-login").addEventListener("click", () => {
+      const u = document.getElementById("adm-user").value.trim();
+      const p = document.getElementById("adm-pass").value.trim();
+      const err = document.getElementById("admin-login-err");
+
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        adminLoggedIn = true;
+        err.classList.add("hidden");
+        document.getElementById("admin-login-box").classList.add("hidden");
+        document.getElementById("admin-panel-box").classList.remove("hidden");
+      } else {
+        err.textContent = "Usuário ou senha incorretos.";
+        err.classList.remove("hidden");
+      }
+    });
+
+    function generateRandomCode(existingSet) {
+      const chars = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+      let code = "";
+      let guard = 0;
+      do {
+        let suffix = "";
+        for (let i = 0; i < 4; i++) {
+          suffix += chars[Math.floor(Math.random() * chars.length)];
+        }
+        code = `PF11-${suffix}`;
+        guard++;
+      } while (existingSet.has(code) && guard < 5000);
+      return code;
+    }
+
+    document.getElementById("btn-adm-gen-batch").addEventListener("click", () => {
+      const qty = parseInt(document.getElementById("adm-batch-qty").value, 10) || 50;
+      const existingSet = new Set(getAllCodes());
+      const newBatch = [];
+
+      for (let i = 0; i < qty; i++) {
+        const c = generateRandomCode(existingSet);
+        existingSet.add(c);
+        newBatch.push(c);
+      }
+
+      const updatedExtras = [...getExtraCodes(), ...newBatch];
+      saveExtraCodes(updatedExtras);
+
+      document.getElementById("adm-batch-text").value = newBatch.join("\n");
+      document.getElementById("adm-batch-result").classList.remove("hidden");
+
+      refreshDashboard();
+      showToast(`${qty} novos códigos gerados! Copie e cole na Página da Prova.`);
+    });
+
+    document.getElementById("btn-adm-copy-batch").addEventListener("click", () => {
+      const txt = document.getElementById("adm-batch-text").value.trim();
+      if (!txt) return;
+      copyToClipboard(txt, "Lote copiado! Cole no painel oculto (🔒) da Página da Prova.");
+    });
+
+    document.getElementById("btn-adm-show-all-extra").addEventListener("click", () => {
+      const extras = getExtraCodes();
+      if (!extras.length) {
+        showToast("Ainda não há lotes extras gerados.");
+        return;
+      }
+      document.getElementById("adm-batch-text").value = extras.join("\n");
+      document.getElementById("adm-batch-result").classList.remove("hidden");
+      showToast(`Exibindo todos os ${extras.length} códigos extras gerados.`);
+    });
+
+    document.getElementById("btn-adm-reset-issued").addEventListener("click", () => {
+      if (confirm("Deseja zerar o histórico local de códigos já emitidos (apenas para testes)?")) {
+        localStorage.removeItem(STORAGE_KEYS.ISSUED_LIST);
+        lastIssuedRecord = null;
+        document.getElementById("code-result-box").classList.add("hidden");
+        refreshDashboard();
+        showToast("Histórico local zerado!");
+      }
+    });
+
+    // Inicialização
+    refreshDashboard();
+  </script>
+</body>
+</html>
