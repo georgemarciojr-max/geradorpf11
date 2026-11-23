@@ -481,6 +481,23 @@
       margin-bottom: 8px;
     }
 
+    .group-msg-box {
+      margin-top: 14px;
+      background: #050a14;
+      border: 2px solid var(--green);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .group-msg-title {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #86efac;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 8px;
+    }
+
     .corrected-preview {
       width: 100%;
       min-height: 250px;
@@ -700,7 +717,7 @@
         <span>Conferência Antifraude do Resultado</span>
       </div>
       <div class="info-box">
-        Cole a <strong>mensagem completa</strong> enviada pelo candidato no WhatsApp. O sistema verifica a assinatura do protocolo, detecta qualquer tentativa de fraude/edição na nota, gabarito ou nome e <strong>reconstrói a mensagem correta</strong> caso haja adulteração.
+        Cole a <strong>mensagem completa</strong> enviada pelo candidato no WhatsApp. O sistema verifica a assinatura do protocolo, detecta qualquer tentativa de fraude/edição na nota, gabarito ou nome, <strong>reconstrói a mensagem correta</strong> caso haja adulteração e já gera o <strong>resumo automático para o Grupo dos Delegados</strong>.
       </div>
       <div class="field">
         <label for="proto-input">Mensagem Completa do WhatsApp (ou Protocolo)</label>
@@ -721,6 +738,16 @@
           <div class="corrected-box-title">📄 Mensagem Correta (Como ela deveria aparecer originalmente)</div>
           <textarea id="corrected-text" class="corrected-preview" readonly></textarea>
           <button type="button" id="btn-copy-corrected" class="btn btn-gold">Copiar Mensagem Correta</button>
+        </div>
+
+        <!-- MENSAGEM AUTOMÁTICA PARA O GRUPO DOS DELEGADOS -->
+        <div id="group-msg-box" class="group-msg-box hidden">
+          <div class="group-msg-title">📢 Mensagem Automática para o Grupo dos Delegados</div>
+          <textarea id="group-msg-text" class="corrected-preview" readonly></textarea>
+          <div class="btn-row" style="margin-top: 0;">
+            <button type="button" id="btn-copy-group-msg" class="btn btn-primary">Copiar p/ Grupo</button>
+            <button type="button" id="btn-send-group-wa" class="btn btn-green">Enviar no WhatsApp</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1059,7 +1086,7 @@
     });
 
     // =========================================================================
-    // AUDITORIA ANTIFRAUDE + RECONSTRUÇÃO DA MENSAGEM CORRETA
+    // AUDITORIA ANTIFRAUDE + RECONSTRUÇÃO + MENSAGEM P/ GRUPO DOS DELEGADOS
     // =========================================================================
     function extractField(rawText, regex) {
       const m = rawText.match(regex);
@@ -1143,15 +1170,65 @@
       ].join("\n");
     }
 
+    function buildDelegatesGroupMessage({
+      candName,
+      delName,
+      roleName,
+      dateTime,
+      duration,
+      attemptLabelText,
+      resultText,
+      statusText,
+      tabsText,
+      auditStatusText,
+      fraudSummary,
+      protocolText,
+      nextStepText
+    }) {
+      return [
+        "🚔 *POLÍCIA FEDERAL — RIO RISE (SERV 11)*",
+        "📢 *REGISTRO DE AVALIAÇÃO — GRUPO DOS DELEGADOS*",
+        "━━━━━━━━━━━━━━━━━━━━",
+        `👤 *Candidato:* ${candName || "Não informado"}`,
+        `👮 *Delegado Responsável:* ${delName || "Não informado"}`,
+        `🎖️ *Prova/Cargo:* ${roleName || "Não informado"}`,
+        dateTime ? `📅 *Data/Hora:* ${dateTime}` : null,
+        duration ? `⏱️ *Duração:* ${duration}` : null,
+        "━━━━━━━━━━━━━━━━━━━━",
+        resultText ? `📊 *Resultado Real:* ${resultText}` : null,
+        attemptLabelText ? `🔄 *Tentativa:* ${attemptLabelText}` : null,
+        tabsText ? `👀 *Saídas de Tela:* ${tabsText}` : null,
+        `📌 *Situação:* ${statusText}`,
+        `🛡️ *Auditoria:* ${auditStatusText}`,
+        fraudSummary ? `⚠️ *Ocorrência:* ${fraudSummary}` : null,
+        "━━━━━━━━━━━━━━━━━━━━",
+        nextStepText,
+        protocolText ? `🔐 *Protocolo:* ${protocolText}` : null
+      ].filter(Boolean).join("\n");
+    }
+
     document.getElementById("btn-clear-proto").addEventListener("click", () => {
       document.getElementById("proto-input").value = "";
       document.getElementById("verify-output-container").classList.add("hidden");
+      document.getElementById("group-msg-box").classList.add("hidden");
     });
 
     document.getElementById("btn-copy-corrected").addEventListener("click", () => {
       const txt = document.getElementById("corrected-text").value;
       if (!txt) return;
       copyToClipboard(txt, "Mensagem correta copiada!");
+    });
+
+    document.getElementById("btn-copy-group-msg").addEventListener("click", () => {
+      const txt = document.getElementById("group-msg-text").value;
+      if (!txt) return;
+      copyToClipboard(txt, "Mensagem para o grupo dos delegados copiada!");
+    });
+
+    document.getElementById("btn-send-group-wa").addEventListener("click", () => {
+      const txt = document.getElementById("group-msg-text").value;
+      if (!txt) return;
+      window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
     });
 
     document.getElementById("btn-decode-proto").addEventListener("click", () => {
@@ -1161,6 +1238,8 @@
       const out = document.getElementById("decode-output");
       const correctedBox = document.getElementById("corrected-box");
       const correctedText = document.getElementById("corrected-text");
+      const groupMsgBox = document.getElementById("group-msg-box");
+      const groupMsgText = document.getElementById("group-msg-text");
 
       if (!rawText) {
         showToast("Cole a mensagem do WhatsApp ou o protocolo para conferir.");
@@ -1169,6 +1248,7 @@
 
       container.classList.remove("hidden");
       correctedBox.classList.add("hidden");
+      groupMsgBox.classList.add("hidden");
 
       const upperText = rawText.toUpperCase();
       const protoMatch = upperText.match(/PF11-(GM|AP|TO|ES)(\d{2})([AB])-(\d{2})-([A-Z0-9]{3})/);
@@ -1178,12 +1258,34 @@
 
       // CASO A: Colou relatório sem protocolo ou com protocolo corrompido
       if (!protoMatch) {
+        const candNameA = extractField(rawText, /Candidato:\*?\s*([^\n\r]+)/i);
+        const delNameA = extractField(rawText, /Delegado Respons[áa]vel:\*?\s*([^\n\r]+)/i);
+        const roleTextA = extractField(rawText, /Prova\/Cargo:\*?\s*([^\n\r]+)/i);
+        const dateTimeA = extractField(rawText, /Data\/Hora:\*?\s*([^\n\r]+)/i);
+
         banner.className = "verify-banner verify-fraud";
         banner.innerHTML = `
           <h3>🚨 ALERTA DE FRAUDE DETECTADA!</h3>
           <p>O candidato <strong>apagou, adulterou ou corrompeu o Protocolo Oficial</strong> na mensagem enviada. Sem o protocolo íntegro, o resultado é inválido e deve ser tratado como fraude.</p>
         `;
         out.innerHTML = `<div class="decode-row"><span>Status:</span><span class="tag-alert">Protocolo ausente ou adulterado</span></div>`;
+
+        groupMsgText.value = buildDelegatesGroupMessage({
+          candName: candNameA,
+          delName: delNameA,
+          roleName: roleTextA,
+          dateTime: dateTimeA,
+          duration: null,
+          attemptLabelText: null,
+          resultText: "INVÁLIDO (Protocolo ausente/corrompido)",
+          statusText: "REPROVADO POR FRAUDE",
+          tabsText: null,
+          auditStatusText: "🚨 FRAUDE DETECTADA",
+          fraudSummary: "O candidato apagou, adulterou ou corrompeu o Protocolo Oficial antes de enviar a mensagem.",
+          protocolText: "Ausente / Adulterado",
+          nextStepText: "⚠️ *Encaminhamento:* Avaliação invalidada por tentativa de fraude."
+        });
+        groupMsgBox.classList.remove("hidden");
         return;
       }
 
@@ -1208,7 +1310,7 @@
         banner.className = "verify-banner verify-warn";
         banner.innerHTML = `
           <h3>ℹ️ Protocolo Decodificado (Conferência Parcial)</h3>
-          <p>Para verificar automaticamente se o candidato <strong>fraudou ou modificou a mensagem</strong>, cole a <strong>mensagem completa</strong> do WhatsApp no campo acima.</p>
+          <p>Para verificar automaticamente se o candidato <strong>fraudou ou modificou a mensagem</strong> e gerar o aviso completo do grupo, cole a <strong>mensagem completa</strong> do WhatsApp no campo acima.</p>
         `;
 
         out.innerHTML = `
@@ -1324,9 +1426,11 @@
       }
 
       // Renderiza os detalhes decodificados
+      const attemptPlain = trueAttemptLetter === "A" ? "1ª Tentativa (Direto)" : "2ª Tentativa (Refez a prova)";
       const attemptLabel = trueAttemptLetter === "A"
         ? `<span class="tag-a">1ª Tentativa (Direto)</span>`
         : `<span class="tag-b">2ª Tentativa (Refez a prova)</span>`;
+      const tabsPlain = tabs === 0 ? "0 saídas (Limpo)" : `${tabs} saída(s) de aba/app detectada(s)`;
       const tabsLabel = tabs === 0
         ? `<span class="tag-a">0 saídas (Limpo)</span>`
         : `<span class="tag-alert">${tabs} saída(s) de aba/app detectada(s)</span>`;
@@ -1354,6 +1458,25 @@
           <p>Nenhuma alteração foi encontrada. Todos os dados da mensagem, o gabarito e a assinatura criptográfica conferem integralmente com o sistema oficial.</p>
         `;
         correctedBox.classList.add("hidden");
+
+        groupMsgText.value = buildDelegatesGroupMessage({
+          candName,
+          delName,
+          roleName: roleInfo.name,
+          dateTime,
+          duration,
+          attemptLabelText: attemptPlain,
+          resultText: `${trueHits}/${totalQ} (${truePct}%)`,
+          statusText: trueStatus,
+          tabsText: tabsPlain,
+          auditStatusText: `✅ AUTÊNTICA (Código ${matchedCode})`,
+          fraudSummary: null,
+          protocolText: trueProtocol,
+          nextStepText: truePassed
+            ? "🎙️ *Encaminhamento:* Aprovado na prova objetiva — liberado para entrevista."
+            : "📌 *Encaminhamento:* Reprovado na prova objetiva (abaixo da média)."
+        });
+        groupMsgBox.classList.remove("hidden");
       } else {
         banner.className = "verify-banner verify-fraud";
         banner.innerHTML = `
@@ -1398,6 +1521,23 @@
 
         correctedText.value = correctedMsg;
         correctedBox.classList.remove("hidden");
+
+        groupMsgText.value = buildDelegatesGroupMessage({
+          candName: candName || "Não informado",
+          delName: delName || "Não informado",
+          roleName: roleInfo.name,
+          dateTime,
+          duration,
+          attemptLabelText: attemptPlain,
+          resultText: `${trueHits}/${totalQ} (${truePct}%) — Enviado adulterado como ${msgHits !== null ? `${msgHits}/${msgTotal}` : "inválido"}`,
+          statusText: `${trueStatus} (FRAUDE DETECTADA)`,
+          tabsText: tabsPlain,
+          auditStatusText: "🚨 FRAUDE — MENSAGEM ADULTERADA PELO CANDIDATO",
+          fraudSummary: fraudReasons[0],
+          protocolText: !signatureValid && !recoveredObj ? `${trueProtocol} (Assinatura Inválida)` : trueProtocol,
+          nextStepText: "⚠️ *Encaminhamento:* Candidato tentou fraudar o relatório — ciência ao comando dos delegados."
+        });
+        groupMsgBox.classList.remove("hidden");
       }
     });
 
